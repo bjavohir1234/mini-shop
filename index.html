@@ -43,7 +43,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); /* Qoraytirish */
+            background: rgba(0, 0, 0, 0.7);
             z-index: 0;
         }
 
@@ -65,7 +65,7 @@
         }
         .mute-btn:active { transform: scale(0.9); }
 
-        /* --- ASOSIY EKRANLAR --- */
+        /* --- EKRANLAR --- */
         .screen {
             width: 100vw; height: 100vh;
             display: flex; flex-direction: column;
@@ -107,8 +107,28 @@
         .input-label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px; }
         .input-field { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #444; background-color: var(--input-bg); color: white; font-size: 16px; outline: none; box-sizing: border-box; }
         .input-field:focus { border-color: var(--tg-blue); }
+        
         .packages-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 20px; flex-shrink: 0; }
+        
         .package-btn.full-width { grid-column: span 2; }
+        
+        /* HEADER STILI (Steam va PUBG uchun) */
+        .package-header {
+            grid-column: span 1; 
+            background-color: transparent;
+            color: #ffc107;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px 0 5px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-top: 10px;
+            line-height: 1.4; /* Uzun matnlar uchun */
+        }
+
         .package-btn { background-color: var(--card-bg); border: 2px solid transparent; padding: 15px; border-radius: 12px; color: white; cursor: pointer; text-align: center; }
         .package-btn.active { border-color: var(--tg-blue); background-color: rgba(51, 144, 236, 0.1); }
         .package-price { display: block; font-size: 12px; color: #aaa; margin-top: 5px; }
@@ -233,7 +253,11 @@
         const muteBtn = document.getElementById('muteBtn');
         const bgMusic = document.getElementById('bgMusic');
         
-        // --- OVOZNI BOSHQARISH (MUSIC.MP3 UCHUN) ---
+        // --- VIDEO TEZLIGI (3x) ---
+        const bgVideo = document.getElementById('bgVideo');
+        bgVideo.playbackRate = 3.0; 
+
+        // --- OVOZNI BOSHQARISH ---
         function toggleMute() {
             if (bgMusic.paused) {
                 bgMusic.play();
@@ -283,14 +307,14 @@
             setTimeout(() => { screenWelcome.style.opacity = '0'; setTimeout(() => { screenWelcome.style.display = 'none'; screenShop.style.display = 'block'; screenShop.style.opacity = '1'; }, 500); }, 2500);
         }
 
-        // --- DETAIL PAGE LOGIKASI ---
-        
+        // --- NARXLAR VA MA'LUMOTLAR ---
         const products = {
             'Telegram Premium': [
                 {name: '🎁 3 oylik', price: '170 000'},
                 {name: '🎁 6 oylik', price: '220 000'},
                 {name: '🎁 Yillik', price: '390 000'}
             ],
+            
             'Telegram Stars': [
                 {name: '⭐️ 50 Stars', price: '15 000'},
                 {name: '⭐️ 75 Stars', price: '20 000'},
@@ -306,18 +330,38 @@
                 {name: '⭐️ 5 000 Stars', price: '1 160 000', full: true},
                 {name: '⭐️ 10 000 Stars', price: '2 300 000', full: true}
             ],
+            
             'Steam Wallet': [
-                {name: '1 USD', price: '14 000'},
-                {name: '5 USD', price: '68 000'},
-                {name: '10 USD', price: '135 000'},
-                {name: '20 USD', price: '270 000'}
+                // 1-10 USD
+                {name: '📉 1-10 USD KURSi: 16,000', type: 'header'}, 
+                {name: '💲 1 USD', price: '16 000'},
+                {name: '💲 5 USD', price: '80 000'},
+                {name: '💲 9 USD', price: '144 000'},
+
+                // 10-100 USD
+                {name: '📉 10-100 USD KURSi: 15,000', type: 'header'},
+                {name: '💲 10 USD', price: '150 000'},
+                {name: '💲 50 USD', price: '750 000'},
+                {name: '💲 99 USD', price: '1 485 000'},
+
+                // 100+ USD
+                {name: '📉 100+ USD KURS: 14,500', type: 'header'},
+                {name: '💲 100 USD', price: '1 450 000'},
+                {name: '💲 500 USD', price: '7 250 000'},
+                {name: '💲 1000 USD', price: '14 500 000'}
             ],
+
+            // PUBG MOBILE YANGILANDI VA HEADER QO'SHILDI
             'PUBG Mobile': [
-                {name: '60 UC', price: '12 000'},
-                {name: '325 UC', price: '58 000'},
-                {name: '660 UC', price: '115 000'},
-                {name: '1800 UC', price: '290 000'}
+                {name: "⚠️ UC ID orqali tashlab beriladi! Shuning uchun narxlar biroz qimmat bo'lishi mumkin!", type: 'header'},
+                {name: '60 UC', price: '15 000'},
+                {name: '325 UC', price: '63 000'},
+                {name: '660 UC', price: '126 000'},
+                {name: '1800 UC', price: '322 000'},
+                {name: '3850 UC', price: '638 000'},
+                {name: '8100 UC', price: '1 265 000'}
             ],
+            
             'Brawl Stars': [
                 {name: '30 Gems', price: '17 000'},
                 {name: '80 Gems', price: '40 000'},
@@ -356,7 +400,8 @@
 
             const container = document.getElementById('packagesContainer');
             
-            if (title === 'Telegram Premium') {
+            // --- O'ZGARISH: STEAM, PREMIUM va PUBG = 1 USTUN (Tagma-tag) ---
+            if (title === 'Telegram Premium' || title === 'Steam Wallet' || title === 'PUBG Mobile') {
                 container.style.gridTemplateColumns = "1fr"; 
             } else {
                 container.style.gridTemplateColumns = "1fr 1fr"; 
@@ -366,6 +411,15 @@
             
             const list = products[title] || products['default'];
             list.forEach(pkg => {
+                // HEADER LOGIKASI
+                if (pkg.type === 'header') {
+                    const div = document.createElement('div');
+                    div.className = 'package-header';
+                    div.innerText = pkg.name;
+                    container.appendChild(div);
+                    return;
+                }
+
                 const btn = document.createElement('div');
                 let cssClass = 'package-btn';
                 if (pkg.full) cssClass += ' full-width';
