@@ -418,7 +418,26 @@
 
         function checkButton() {
             const btn = document.getElementById('buyBtn');
-            if (selectedPackage && userIdInput.value.length > 2) {
+            let inputValue = userIdInput.value.trim(); // Bo'shliqlarni olib tashlaymiz
+            let isValid = false;
+
+            // Agar Telegram xizmatlari tanlangan bo'lsa
+            if (selectedItem === 'Telegram Premium' || selectedItem === 'Telegram Stars') {
+                // @ bilan boshlanishi va kamida 5 ta belgi bo'lishi shart (masalan: @abcd)
+                if (inputValue.startsWith('@') && inputValue.length >= 5) {
+                    isValid = true;
+                }
+            } 
+            // Agar boshqa o'yinlar (PUBG, Steam) bo'lsa
+            else {
+                // Ularga eski qoida: kamida 3 ta belgi
+                if (inputValue.length > 2) {
+                    isValid = true;
+                }
+            }
+
+            // Agar ham paket tanlangan, ham ID/Username to'g'ri bo'lsa, tugmani yoqamiz
+            if (selectedPackage && isValid) {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
